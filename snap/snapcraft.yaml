@@ -1,0 +1,99 @@
+name: husarion-rplidar
+adopt-info: husarion-rplidar
+license: Apache-2.0
+summary: The husarion-rplidar
+description: |
+  The rhusarion-rplidar snap contains all the necessary software to bring the robot up
+  such as controller, robot state publisher etc.
+
+  It offers the following parameters,
+
+  - ros-domain-id
+  - ros-localhost-only
+  - transport
+  - serial-port
+  - driver.namespace
+
+  which can be set as follows, e.g.,
+
+    snap set husarion-rplidar driver.namespace=robot
+
+grade: stable
+confinement: strict
+base: core22
+
+contact: https://github.com/husarion/husarion-rplidar-snap/issues
+issues: https://github.com/husarion/husarion-rplidar-snap/issues
+website: https://husarion.com/
+
+architectures:
+  - build-on: amd64
+    build-for: amd64
+  # - build-on: amd64
+  #   build-for: arm64
+  - build-on: arm64
+    build-for: arm64
+
+slots:
+  shm-slot:
+    interface: shared-memory
+    write: ['*'] # paths are relative to /dev/shm
+
+plugs:
+  shm-plug:
+    interface: shared-memory
+    shared-memory: shm-slot
+    private: false
+
+apps:
+
+  daemon:
+    command: usr/bin/launcher.sh
+    command-chain: [usr/bin/ros_setup.sh]
+    daemon: simple
+    install-mode: enable
+    plugs: [network, network-bind, shm-plug, raw-usb]
+    slots: [shm-slot]
+    extensions: [ros2-humble-ros-base]
+
+  husarion-rplidar:
+    command: usr/bin/launcher.sh
+    command-chain: [usr/bin/check_daemon_running.sh, usr/bin/ros_setup.sh]
+    plugs: [network, network-bind, shm-plug, raw-usb]
+    slots: [shm-slot]
+    extensions: [ros2-humble-ros-base]
+
+  start:
+    command: usr/bin/start_launcher.sh
+
+  stop:
+    command: usr/bin/stop_launcher.sh
+
+parts:
+  husarion-rplidar:
+    plugin: nil
+    stage-packages:
+      - ros-humble-rplidar-ros
+    override-stage: |
+      craftctl default
+      version="$(apt-cache policy ros-humble-rplidar-ros | grep Candidate | awk '{print $2}')"
+      craftctl set version="$version"
+      craftctl set grade="stable"
+      
+  # copy local scripts to the snap usr/bin
+  local-files-ros:
+    plugin: dump
+    source: snap/local/ros_common/
+    organize:
+      '*.sh': usr/bin/
+      '*.xml': usr/share/husarion-rplidar/config/
+
+  local-files:
+    plugin: dump
+    source: snap/local/
+    organize:
+      '*.sh': usr/bin/
+      # '*.py': usr/bin/
+      # '*.yaml': usr/share/husarion-rplidar/config/
+      # '*.xml': usr/share/husarion-rplidar/config/
+      # '*.json': usr/share/husarion-rplidar/config/
