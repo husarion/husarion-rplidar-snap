@@ -4,9 +4,13 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction, PushRosNamespace, SetRemap
+from launch.actions import DeclareLaunchArgument, GroupAction, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node
+from launch_ros.actions import Node, PushRosNamespace
+
+def get_frame_id(context):
+    device_ns = LaunchConfiguration('device_namespace').perform(context)
+    return f"{device_ns}_link" if device_ns else "laser"
 
 def generate_launch_description():
     channel_type = LaunchConfiguration('channel_type', default='serial')
@@ -15,16 +19,35 @@ def generate_launch_description():
     frame_id = LaunchConfiguration('frame_id', default='laser')
     inverted = LaunchConfiguration('inverted', default='false')
     angle_compensate = LaunchConfiguration('angle_compensate', default='true')
-    scan_mode = LaunchConfiguration('scan_mode', default='Sensitivity')
+    scan_mode = LaunchConfiguration('scan_mode', default='')
     robot_namespace = LaunchConfiguration('robot_namespace', default='')
     device_namespace = LaunchConfiguration('device_namespace', default='')
 
-    # Conditional frame_id setup based on device_namespace
-    def get_frame_id(context):
-        device_ns = LaunchConfiguration('device_namespace').perform(context)
-        return f"{device_ns}_link" if device_ns else "laser"
+    def launch_setup(context, *args, **kwargs):
+        frame_id_value = get_frame_id(context)
+        robot_ns = LaunchConfiguration('robot_namespace').perform(context)
 
-    frame_id_substitution = OpaqueFunction(function=get_frame_id)
+        node = Node(
+            package='rplidar_ros',
+            executable='rplidar_node',
+            name='rplidar_node',
+            parameters=[{
+                'channel_type': channel_type,
+                'serial_port': serial_port,
+                'serial_baudrate': serial_baudrate,
+                'frame_id': frame_id_value,
+                'inverted': inverted,
+                'angle_compensate': angle_compensate,
+                'scan_mode': scan_mode
+            }],
+            remappings=[
+                ('/tf', f'{robot_ns}/tf'),
+                ('/tf_static', f'{robot_ns}/tf_static')
+            ],
+            output='screen'
+        )
+
+        return [PushRosNamespace(robot_namespace), PushRosNamespace(device_namespace), node]
 
     return LaunchDescription([
 
@@ -75,27 +98,5 @@ def generate_launch_description():
             description='Sensor namespace that will appear before all non absolute topics and TF frames, used for distinguishing multiple cameras on the same robot.',
         ),
 
-        GroupAction(
-            actions=[
-                PushRosNamespace(robot_namespace),
-                PushRosNamespace(device_namespace),
-                SetRemap(src='/tf', dst=[LaunchConfiguration('robot_namespace'), '/tf']),
-                SetRemap(src='/tf_static', dst=[LaunchConfiguration('robot_namespace'), '/tf_static']),
-                Node(
-                    package='rplidar_ros',
-                    executable='rplidar_node',
-                    name='rplidar_node',
-                    parameters=[{
-                        'channel_type': channel_type,
-                        'serial_port': serial_port,
-                        'serial_baudrate': serial_baudrate,
-                        'frame_id': frame_id_substitution,
-                        'inverted': inverted,
-                        'angle_compensate': angle_compensate,
-                        'scan_mode': scan_mode
-                    }],
-                    output='screen'
-                )
-            ]
-        )
+        OpaqueFunction(function=launch_setup)
     ])
