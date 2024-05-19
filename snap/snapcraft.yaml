@@ -93,7 +93,7 @@ parts:
     source: snap/local/
     organize:
       '*.sh': usr/bin/
-      # '*.py': usr/bin/
+      '*.py': usr/bin/
       # '*.yaml': usr/share/husarion-rplidar/config/
       # '*.xml': usr/share/husarion-rplidar/config/
       # '*.json': usr/share/husarion-rplidar/config/

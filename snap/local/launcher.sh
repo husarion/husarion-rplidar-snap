@@ -8,7 +8,17 @@ log() {
 
 # Iterate over the snap parameters and retrieve their value.
 # If a value is set, it is forwarded to the launch file.
-OPTIONS="namespace serial-port serial-baudrate"
+OPTIONS="\
+  channel-type \
+  serial-port \
+  serial-baudrate \
+  frame-id \
+  inverted \
+  angle-compensate \
+  scan-mode \
+  robot-namespace \
+  device-namespace \
+  "
 LAUNCH_OPTIONS=""
 
 for OPTION in ${OPTIONS}; do
@@ -26,4 +36,4 @@ if [ "${LAUNCH_OPTIONS}" ]; then
   log "Running with options: ${LAUNCH_OPTIONS}"
 fi
 
-ros2 launch rplidar_ros rplidar_s2_launch.py ${LAUNCH_OPTIONS}
+ros2 launch $SNAP/usr/bin/rplidar.launch.py ${LAUNCH_OPTIONS}
