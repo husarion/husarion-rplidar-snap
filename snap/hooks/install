@@ -17,9 +17,9 @@ snapctl set driver.serial-baudrate="256000"
 snapctl set driver.frame-id="laser"
 snapctl set driver.inverted="false"
 snapctl set driver.angle-compensate="true"
-snapctl set driver.scan-mode=!
+snapctl set driver.scan-mode!
 snapctl set driver.namespace!
-snapctl set driver.device-namespace=!
+snapctl set driver.device-namespace!
 
 if ! snapctl is-connected raw-usb; then
   log "Plug 'raw-usb' isn't connected, please run:"
