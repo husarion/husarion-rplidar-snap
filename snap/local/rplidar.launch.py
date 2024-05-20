@@ -41,8 +41,8 @@ def generate_launch_description():
                 'scan_mode': scan_mode
             }],
             remappings=[
-                ('/tf', f'{robot_ns}/tf'),
-                ('/tf_static', f'{robot_ns}/tf_static')
+                ('/tf', f'/{robot_ns}/tf'),
+                ('/tf_static', f'/{robot_ns}/tf_static')
             ],
             output='screen'
         )
