@@ -10,7 +10,8 @@ from launch_ros.actions import Node, PushRosNamespace
 
 def get_frame_id(context):
     device_ns = LaunchConfiguration('device_namespace').perform(context)
-    return f"{device_ns}_link" if device_ns else "laser"
+    default_frame_id = LaunchConfiguration('frame_id').perform(context)
+    return f"{device_ns}_link" if device_ns else f"{default_frame_id}"
 
 def generate_launch_description():
     channel_type = LaunchConfiguration('channel_type', default='serial')
@@ -20,12 +21,20 @@ def generate_launch_description():
     inverted = LaunchConfiguration('inverted', default='false')
     angle_compensate = LaunchConfiguration('angle_compensate', default='true')
     scan_mode = LaunchConfiguration('scan_mode', default='')
-    robot_namespace = LaunchConfiguration('robot_namespace', default='')
+    namespace = LaunchConfiguration('namespace', default='')
     device_namespace = LaunchConfiguration('device_namespace', default='')
 
     def launch_setup(context, *args, **kwargs):
         frame_id_value = get_frame_id(context)
-        robot_ns = LaunchConfiguration('robot_namespace').perform(context)
+        robot_ns = LaunchConfiguration('namespace').perform(context)
+
+        remappings = []
+        if robot_ns:
+            remappings.append(('/tf', f'/{robot_ns}/tf'))
+            remappings.append(('/tf_static', f'/{robot_ns}/tf_static'))
+        else:
+            remappings.append(('/tf', '/tf'))
+            remappings.append(('/tf_static', '/tf_static'))
 
         node = Node(
             package='rplidar_ros',
@@ -40,14 +49,11 @@ def generate_launch_description():
                 'angle_compensate': angle_compensate,
                 'scan_mode': scan_mode
             }],
-            remappings=[
-                ('/tf', f'/{robot_ns}/tf'),
-                ('/tf_static', f'/{robot_ns}/tf_static')
-            ],
+            remappings=remappings,
             output='screen'
         )
 
-        return [PushRosNamespace(robot_namespace), PushRosNamespace(device_namespace), node]
+        return [PushRosNamespace(namespace), PushRosNamespace(device_namespace), node]
 
     return LaunchDescription([
 
@@ -87,7 +93,7 @@ def generate_launch_description():
             description='Specifying scan mode of lidar'),
 
         DeclareLaunchArgument(
-            'robot_namespace',
+            'namespace',
             default_value='',
             description='Namespace which will appear in front of all topics (including /tf and /tf_static).',
         ),

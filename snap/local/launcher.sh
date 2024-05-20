@@ -9,16 +9,17 @@ log() {
 # Iterate over the snap parameters and retrieve their value.
 # If a value is set, it is forwarded to the launch file.
 OPTIONS="\
-  channel-type \
-  serial-port \
-  serial-baudrate \
-  frame-id \
-  inverted \
-  angle-compensate \
-  scan-mode \
-  robot-namespace \
-  device-namespace \
-  "
+ channel-type \
+ serial-port \
+ serial-baudrate \
+ frame-id \
+ inverted \
+ angle-compensate \
+ scan-mode \
+ namespace \
+ device-namespace \
+"
+
 LAUNCH_OPTIONS=""
 
 for OPTION in ${OPTIONS}; do
