@@ -78,4 +78,4 @@ publish:
     #!/bin/bash
     export SNAPCRAFT_STORE_CREDENTIALS=$(cat exported.txt)
     snapcraft login
-    snapcraft upload --release edge husarion-astra*.snap
+    snapcraft upload --release edge husarion-rplidar*.snap
