@@ -1,6 +1,6 @@
-# husarion-rplidar-snap
+## husarion-rplidar-snap
 
-Snap for Orbbec Astra customized for Husarion robots
+Snap for SLAMTEC LIDARs customized for Husarion robots.
 
 ## Apps
 
@@ -10,9 +10,55 @@ Snap for Orbbec Astra customized for Husarion robots
 | `husarion-rplidar.stop` | Stop the `husarion-rplidar.daemon` service |
 | `husarion-rplidar` | Start the application in the foreground (run in the current terminal). Remember to stop the daemon first |
 
+## Quick start
+
+1. Connect the RPLIDAR to the USB port.
+2. Install the snap:
+
+   ```bash
+   sudo snap install husarion-rplidar
+   ```
+
+3. Verify the `/scan` topic is available:
+
+   ```bash
+   ros2 topic list
+   ```
+
+   You should see `/scan` listed.
+
+## Unplugging and Plugging the LIDAR
+
+### Before Unplugging
+
+Run the following command to stop the service:
+
+```bash
+husarion-rplidar.stop
+```
+
+### After Plugging Back In
+
+Run the following command to start the service:
+
+```bash
+husarion-rplidar.start
+```
+
+### Restarting the Driver
+
+If you need to restart the driver, run:
+
+```bash
+husarion-rplidar.stop
+husarion-rplidar.start
+```
+
 ## Setup RPLIDAR Params
 
-All `husarion-rplidar` ROS 2 params are available over a separate key:
+### ROS 2 Parameters
+
+All `husarion-rplidar` ROS 2 parameters are available under the `driver` key.
 
 | Key | Default Value |
 | driver.device-namespace | (unset) |
@@ -23,13 +69,13 @@ All `husarion-rplidar` ROS 2 params are available over a separate key:
 | driver.inverted | false |
 | driver.angle-compensate | true |
 
-To set the parameters, use the snap set command, e.g.,
+to set the parameters, use the `snap set` command. For example:
 
 ```bash
 snap set husarion-rplidar driver.namespace=myrobot
 ```
 
-Additionally there are the following params available:
+### Additional Parameters
 
 | Key | Default Value |
 | driver | {...} |
@@ -39,22 +85,33 @@ Additionally there are the following params available:
 | serial-port | auto |
 | serial-baudrate | 256000 |
 
-Available DDS configs for `transport` params are `builtin`, `udp` and `shm`.
+Available DDS configs for the `transport` parameter are `builtin`, `udp` and `shm`.
 
-Configurations for `udp` and `shm` you can modify under this path.
+You can modify configurations for `udp` and `shm` under this path:
 
 ```bash
-$ ls /var/snap/husarion-rplidar/common/
+ls /var/snap/husarion-rplidar/common/
+```
+
+You should see:
+
+```bash
 shm.xml  udp.xml
 ```
 
-You can also create your own DDS config files place them in this folder and use them with:
+You can also create your own DDS config files, eg.:
+
+```bash
+vim /var/snap/husarion-rplidar/common/my-custom-transport.xml
+```
+
+and use them with:
 
 ```bash
 sudo snap set husarion-rplidar transport=my-custom-transport
 ```
 
-By default `serial-port` is set to `auto`, so it tries to automatically determine the serial port under which the LIDAR is connected. If you have multiple LIDARs rather set a full path to the serial interface (or a symlink):
+By default, `serial-port` is set to `auto`, which tries to automatically determine the serial port where the LIDAR is connected. If you have multiple LIDARs, it's recommended to set the full path to the serial interface (or a symlink):
 
 ```bash
 sudo snap set husarion-rplidar serial=/dev/ttyUSB0
