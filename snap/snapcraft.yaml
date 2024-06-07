@@ -63,6 +63,7 @@ apps:
     command-chain: [usr/bin/ros_setup.sh]
     daemon: simple
     install-mode: enable
+    stop-mode: sigint-all
     plugs: [network, network-bind, shm-plug, raw-usb]
     slots: [shm-slot]
     extensions: [ros2-humble-ros-base]
