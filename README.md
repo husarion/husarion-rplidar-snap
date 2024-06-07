@@ -2,6 +2,8 @@
 
 Snap for SLAMTEC LIDARs customized for Husarion robots.
 
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/husarion-rplidar)
+
 ## Apps
 
 | app | description |
@@ -61,6 +63,7 @@ husarion-rplidar.start
 All `husarion-rplidar` ROS 2 parameters are available under the `driver` key.
 
 | Key | Default Value |
+| - | - |
 | driver.device-namespace | (unset) |
 | driver.namespace | (unset) |
 | driver.scan-mode | (unset) |
@@ -78,6 +81,7 @@ snap set husarion-rplidar driver.namespace=myrobot
 ### Additional Parameters
 
 | Key | Default Value |
+| - | - |
 | driver | {...} |
 | ros-domain-id | 0 |
 | ros-localhost-only | 0 |

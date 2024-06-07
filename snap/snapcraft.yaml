@@ -1,7 +1,8 @@
 name: husarion-rplidar
 adopt-info: husarion-rplidar
 license: Apache-2.0
-summary: The husarion-rplidar
+summary: Snap for SLAMTEC LIDARs customized for Husarion robots.
+icon: snap/gui/icon.png
 description: |
   The husarion-rplidar snap contains all the necessary software to bring the RPLIDAR laser sensors up.
   It offers the following parameters:
