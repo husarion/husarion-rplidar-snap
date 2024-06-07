@@ -3,18 +3,29 @@ adopt-info: husarion-rplidar
 license: Apache-2.0
 summary: The husarion-rplidar
 description: |
-  The rhusarion-rplidar snap contains all the necessary software to bring the robot up
-  such as controller, robot state publisher etc.
+  The husarion-rplidar snap contains all the necessary software to bring the RPLIDAR laser sensors up.
+  It offers the following parameters:
 
-  It offers the following parameters,
+    Key                 Default Value
+    driver              {...}
+    ros-domain-id       0
+    ros-localhost-only  0
+    transport           udp
+    serial-port         auto
+    serial-baudrate     256000
+    
+  The driver parameter is a dictionary that contains the following keys:
 
-  - ros-domain-id
-  - ros-localhost-only
-  - transport
-  - serial-port
-  - driver.namespace
+    Key                            Default Value
+    driver.device-namespace        (unset)
+    driver.namespace               (unset)
+    driver.scan-mode               (unset)
+    driver.channel-type            serial
+    driver.frame-id                laser
+    driver.inverted                false
+    driver.angle-compensate        true
 
-  which can be set as follows, e.g.,
+  To set the parameters, use the snap set command, e.g.,
 
     snap set husarion-rplidar driver.namespace=robot
 
