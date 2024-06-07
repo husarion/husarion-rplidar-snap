@@ -26,7 +26,7 @@ description: |
 
   To set the parameters, use the snap set command, e.g.,
 
-  `snap set husarion-rplidar driver.namespace=robot`
+     snap set husarion-rplidar driver.namespace=robot
 
 grade: stable
 confinement: strict
