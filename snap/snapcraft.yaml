@@ -4,31 +4,35 @@ license: Apache-2.0
 summary: Snap for SLAMTEC LIDARs customized for Husarion robots.
 icon: snap/gui/icon.png
 description: |
-  The husarion-rplidar snap contains all the necessary software to bring the RPLIDAR laser sensors up.
+  The `husarion-rplidar` snap contains all the necessary software to bring the RPLIDAR laser sensors up.
   It offers the following parameters:
 
-    Key                 Default Value
-    driver              {...}
-    ros-domain-id       0
-    ros-localhost-only  0
-    transport           udp
-    serial-port         auto
-    serial-baudrate     256000
+  | Key | Default Value |
+  | - | - |
+  | driver | {...} |
+  | ros-domain-id | 0 |
+  | ros-localhost-only | 0 |
+  | transport | udp |
+  | serial-port | auto |
+  | serial-baudrate | 256000 |
     
   The driver parameter is a dictionary that contains the following keys:
 
-    Key                            Default Value
-    driver.device-namespace        (unset)
-    driver.namespace               (unset)
-    driver.scan-mode               (unset)
-    driver.channel-type            serial
-    driver.frame-id                laser
-    driver.inverted                false
-    driver.angle-compensate        true
+  | Key | Default Value |
+  | - | - |
+  | driver.device-namespace | (unset) |
+  | driver.namespace | (unset) |
+  | driver.scan-mode | (unset) |
+  | driver.channel-type | serial |
+  | driver.frame-id | laser |
+  | driver.inverted | false |
+  | driver.angle-compensate | true |
 
   To set the parameters, use the snap set command, e.g.,
 
-    snap set husarion-rplidar driver.namespace=robot
+  ```
+  snap set husarion-rplidar driver.namespace=robot
+  ```
 
 grade: stable
 confinement: strict
