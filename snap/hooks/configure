@@ -61,11 +61,20 @@ for OPT in ${OPTS}; do
   fi
 done
 
-# Make sure ROS 2 nodes parameters value is a boolean
+# Make sure the serial-baudrate value is valid
 OPT="serial-baudrate"
-VALUE="$(snapctl get driver.${OPT})"
+VALUE="$(snapctl get ${OPT})"
 if ! is_integer "${VALUE}" ; then
   log_and_echo "'${VALUE}' is not a supported value for '${OPT}'. Possible values are integers."
+  exit 1
+fi
+
+# Make sure the serial-port value is valid
+OPT="serial-port"
+VALUE="$(snapctl get ${OPT})"
+
+if [ "${VALUE}" != "auto" ] && [ ! -e "${VALUE}" ]; then
+  log_and_echo "'${VALUE}' is not a valid value for '${OPT}'. It must be 'auto' or a valid serial port in the /dev/ directory."
   exit 1
 fi
 

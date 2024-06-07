@@ -74,6 +74,7 @@ parts:
     plugin: nil
     stage-packages:
       - ros-humble-rplidar-ros
+      - usbutils # lsusb
     override-stage: |
       craftctl default
       version="$(apt-cache policy ros-humble-rplidar-ros | grep Candidate | awk '{print $2}')"

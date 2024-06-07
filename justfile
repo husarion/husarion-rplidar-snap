@@ -35,6 +35,8 @@ iterate:
     unsquashfs husarion-rplidar*.snap
     sudo snap try squashfs-root/
     sudo snap connect husarion-rplidar:raw-usb
+    sudo snap connect husarion-rplidar:shm-plug husarion-rplidar:shm-slot
+    sudo husarion-rplidar.stop
 
     end_time=$(date +%s)
     duration=$(( end_time - start_time ))
