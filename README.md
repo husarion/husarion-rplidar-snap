@@ -30,3 +30,4 @@ sudo snap set husarion-rplidar ros.domain-id=12
 ```bash
 sudo snap set husarion-rplidar ros.namespace=abc
 ```
+
