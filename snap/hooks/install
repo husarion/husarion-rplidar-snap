@@ -1,24 +1,21 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
-# Define a function to log messages
-log() {
-  local message="$1"
-  # Log the message with logger
-  logger -t "${SNAP_NAME}" "install hook: $message"
-}
+# Define a function to log and echo messages
+source $SNAP/usr/bin/utils.sh
 
 $SNAP/usr/bin/install_hook_ros.sh
 
 # Parameters are 'unset'.
 # Default configuration values is left to the launch file.
+snapctl set configuration="custom"
+
 snapctl set driver.channel-type="serial"
-snapctl set driver.serial-port="/dev/ttyUSB0"
+snapctl set driver.serial-port="auto"
 snapctl set driver.serial-baudrate="256000"
 snapctl set driver.frame-id="laser"
 snapctl set driver.inverted="false"
 snapctl set driver.angle-compensate="true"
 snapctl set driver.scan-mode!
-snapctl set driver.namespace!
 snapctl set driver.device-namespace!
 
 if ! snapctl is-connected raw-usb; then
