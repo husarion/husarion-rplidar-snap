@@ -4,16 +4,16 @@ source $SNAP/usr/bin/utils.sh
 
 # Iterate over the snap parameters and retrieve their value.
 # If a value is set, it is forwarded to the launch file.
-OPTIONS="\
- channel-type \
- serial-port \
- serial-baudrate \
- frame-id \
- inverted \
- angle-compensate \
- scan-mode \
- device-namespace \
-"
+OPTIONS=(
+ channel-type
+ serial-port
+ serial-baudrate
+ frame-id
+ inverted
+ angle-compensate
+ scan-mode
+ device-namespace
+)
 
 # Check if SERIAL_PORT is set to auto or specified
 SERIAL_PORT=$(find_ttyUSB driver.serial-port "10c4")
@@ -34,7 +34,7 @@ fi
 
 LAUNCH_OPTIONS=""
 
-for OPTION in ${OPTIONS}; do
+for OPTION in "${OPTIONS[@]}"; do
   VALUE="$(snapctl get driver.${OPTION})"
   
   if [ "${OPTION}" == "serial-port" ]; then

@@ -10,7 +10,7 @@ description: |
 
   The snap provides the following configurable parameters (`param name`: `default value`):
 
-  * `configuratin`: `custom`
+  * `configuration`: `custom`
   * `driver`: `{...}`
   * `ros`: `{...}`
 
