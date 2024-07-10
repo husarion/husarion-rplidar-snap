@@ -29,6 +29,7 @@ Snap for SLAMTEC LIDARs customized for Husarion robots.
 
    You should see `/scan` listed.
 
+
 ## Unplugging and Plugging the LIDAR
 
 ### Before Unplugging
@@ -54,7 +55,29 @@ If you need to restart the driver, run:
 ```bash
 husarion-rplidar.stop
 husarion-rplidar.start
+
 ```
+
+## Using the snap
+
+### Choosing a LIDAR model
+
+```bash
+sudo snap set husarion-rplidar configuration=s2
+```
+
+### Change `ROS_DOMAIN_ID`
+
+```bash
+sudo snap set husarion-rplidar ros.domain-id=12
+```
+
+### Change `NAMESPACE`
+
+```bash
+sudo snap set husarion-rplidar ros.namespace=abc
+```
+
 
 ## Setup RPLIDAR Params
 
@@ -65,29 +88,14 @@ All `husarion-rplidar` ROS 2 parameters are available under the `driver` key.
 | Key | Default Value |
 | - | - |
 | driver.device-namespace | (unset) |
-| driver.namespace | (unset) |
 | driver.scan-mode | (unset) |
 | driver.channel-type | serial |
 | driver.frame-id | laser |
 | driver.inverted | false |
 | driver.angle-compensate | true |
 
-to set the parameters, use the `snap set` command. For example:
-
-```bash
-snap set husarion-rplidar driver.namespace=myrobot
-```
 
 ### Additional Parameters
-
-| Key | Default Value |
-| - | - |
-| driver | {...} |
-| ros-domain-id | 0 |
-| ros-localhost-only | 0 |
-| transport | udp |
-| serial-port | auto |
-| serial-baudrate | 256000 |
 
 Available DDS configs for the `transport` parameter are `builtin`, `udp` and `shm`.
 
@@ -118,5 +126,5 @@ sudo snap set husarion-rplidar transport=my-custom-transport
 By default, `serial-port` is set to `auto`, which tries to automatically determine the serial port where the LIDAR is connected. If you have multiple LIDARs, it's recommended to set the full path to the serial interface (or a symlink):
 
 ```bash
-sudo snap set husarion-rplidar serial=/dev/ttyUSB0
+sudo snap set husarion-rplidar driver.serial-port=/dev/ttyUSB0
 ```

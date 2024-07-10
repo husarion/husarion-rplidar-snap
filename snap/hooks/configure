@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 # The configure hook is called every time one the following actions happen:
 # - initial snap installation
@@ -6,81 +6,97 @@
 # - whenever the user runs snap set|unset to change a configuration option
 
 # Define a function to log and echo messages
-log_and_echo() {
-    local message="$1"
-    # Log the message with logger
-    logger -t "${SNAP_NAME}" "configure hook: $message"
-    # Echo the message to standard error
-    echo >&2 "$message"
-}
+source $SNAP/usr/bin/utils.sh
 
-log() {
-    local message="$1"
-    # Log the message with logger
-    logger -t "${SNAP_NAME}" "configure hook: $message"
-}
+# # Define the top-level key and the list of valid keys
+VALID_DRIVER_KEYS=(
+  "channel-type"
+  "serial-port"
+  "serial-baudrate"
+  "frame-id"
+  "inverted"
+  "angle-compensate"
+  "scan-mode"
+  "device-namespace"
+)
+
+VALID_CONFIGURATION_KEYS=(
+  "custom"
+  "a2m8"
+  "a2m12"
+  "a3"
+  "s1"
+  "s2"
+  "s3"
+)
+
+# common
+validate_keys "driver" VALID_DRIVER_KEYS[@]
+validate_keys "configuration" VALID_CONFIGURATION_KEYS[@]
+
+config_value=$(snapctl get configuration)
+
+case "$config_value" in
+"a2m8")
+  snapctl set driver.channel-type="serial"
+  snapctl set driver.serial-baudrate="115200"
+  snapctl set driver.scan-mode="Sensitivity"
+  ;;
+"a2m12" | "a3")
+  snapctl set driver.channel-type="serial"
+  snapctl set driver.serial-baudrate="256000"
+  snapctl set driver.scan-mode="Sensitivity"
+  ;;
+"s1")
+  snapctl set driver.channel-type="serial"
+  snapctl set driver.serial-baudrate="256000"
+  snapctl set driver.scan-mode!
+  ;;
+"s2" | "s3")
+  snapctl set driver.channel-type="serial"
+  snapctl set driver.serial-baudrate="1000000"
+  snapctl set driver.scan-mode="DenseBoost"
+  ;;
+esac
+
+VALID_BOOLEAN_OPTIONS=("true" "false")
+
+# validate driver.channel-type
+VALID_CHANNEL_TYPE_OPTIONS=("serial" "tcp" "udp")
+validate_option "driver.channel-type" VALID_CHANNEL_TYPE_OPTIONS[@]
+
+# validate driver.serial-port
+validate_serial_port "driver.serial-port"
+
+# validate driver.serial-baudrate
+SUPPORTED_SERIAL_BAUDRATE_RANGE=(0 1000000)
+validate_number "driver.serial-baudrate" SUPPORTED_SERIAL_BAUDRATE_RANGE[@]
+
+# validate driver.frame-id
+validate_regex "driver.frame-id" '^[a-z_-]{1,30}$' "Possible values are text with a maximum length of 30 characters, containing only lowercase letters (a-z),'-' or '_'."
+
+# validate driver.inverted
+validate_option "driver.inverted" VALID_BOOLEAN_OPTIONS[@]
+
+# validate driver.angle-compensate
+validate_option "driver.angle-compensate" VALID_BOOLEAN_OPTIONS[@]
+
+# validate driver.scan-mode
+VALID_SCAN_MODE_OPTIONS=("DenseBoost" "Sensitivity" "Standard")
+validate_option "driver.scan-mode" VALID_SCAN_MODE_OPTIONS[@]
+
+# validate device-namespace
+DEVICE_NAMESPACE=$(snapctl get driver.device-namespace)
+
+if [[ -n "$DEVICE_NAMESPACE" ]]; then
+  validate_regex "driver.device-namespace" '^[a-z_]{1,10}$' "Possible values are text with a maximum length of 10 characters, containing only lowercase letters (a-z) or '_'."
+fi
 
 $SNAP/usr/bin/configure_hook_ros.sh
 
-is_integer() {
-  expr "$1" : '-\?[0-9][0-9]*$' >/dev/null 2>&1
-}
-
-# Make sure ROS 2 nodes parameters value is a boolean
-OPTS="inverted angle-compensate"
-for OPT in ${OPTS}; do
-  VALUE="$(snapctl get driver.${OPT})"
-  if [ -n "${VALUE}" ]; then
-    case "${VALUE}" in
-    "true") ;;
-    "false") ;;
-    *)
-      log_and_echo "configure hook: '${VALUE}' is not a supported value for ${OPT}." \
-        "Possible values are True or False."
-      exit 1
-      ;;
-    esac
-  fi
-done
-
-# Make sure ROS 2 nodes parameters value is a boolean
-OPTS="channel-type"
-for OPT in ${OPTS}; do
-  VALUE="$(snapctl get driver.${OPT})"
-  if [ -n "${VALUE}" ]; then
-    case "${VALUE}" in
-    "serial") ;;
-    "tcp") ;;
-    "udp") ;;
-    *)
-      log_and_echo "configure hook: '${VALUE}' is not a supported value for ${OPT}." \
-        "Possible values are serial, tcp, udp."
-      exit 1
-      ;;
-    esac
-  fi
-done
-
-# Make sure the serial-baudrate value is valid
-OPT="serial-baudrate"
-VALUE="$(snapctl get ${OPT})"
-if ! is_integer "${VALUE}" ; then
-  log_and_echo "'${VALUE}' is not a supported value for '${OPT}'. Possible values are integers."
-  exit 1
-fi
-
-# Make sure the serial-port value is valid
-OPT="serial-port"
-VALUE="$(snapctl get ${OPT})"
-
-if [ "${VALUE}" != "auto" ] && [ ! -e "${VALUE}" ]; then
-  log_and_echo "'${VALUE}' is not a valid value for '${OPT}'. It must be 'auto' or a valid serial port in the /dev/ directory."
-  exit 1
-fi
-
 # restart services with new ROS 2 config
 for service in daemon; do
-  if snapctl services ${SNAP_NAME}.${service} | grep -qw active; then
+  if snapctl services ${SNAP_NAME}.${service} | grep -qw enabled; then
     snapctl restart ${SNAP_NAME}.${service}
     log "Restarted ${SNAP_NAME}.${service}"
   fi

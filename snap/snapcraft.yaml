@@ -1,32 +1,40 @@
 name: husarion-rplidar
 adopt-info: husarion-rplidar
 license: Apache-2.0
-summary: SLAMTEC LIDARs driver for Husarion robots
+summary: RPLIDAR ROS 2 driver for Husarion robots
 icon: snap/gui/icon.png
 description: |
-  The `husarion-rplidar` snap contains all the necessary software to bring the RPLIDAR laser sensors up.
-  It offers the following parameters:
+  The `husarion-rplidar` snap contains all the necessary software to bring the RPLIDAR LIDARS up.
+  
+  **Parameters**
 
-  * driver: `{...}`
-  * ros-domain-id: `0`
-  * ros-localhost-only: `0`
-  * transport: `udp`
-  * serial-port: `auto`
-  * serial-baudrate: `256000`
-    
-  The `driver` parameter is a dictionary that contains the following keys:
+  The snap provides the following configurable parameters (`param name`: `default value`):
 
-  * driver.device-namespace: `(unset)`
-  * driver.namespace: `(unset)`
-  * driver.scan-mode: `(unset)`
-  * driver.channel-type: `serial`
-  * driver.frame-id: `laser`
-  * driver.inverted: `false`
-  * driver.angle-compensate: `true`
+  * `configuratin`: `custom`
+  * `driver`: `{...}`
+  * `ros`: `{...}`
+
+  The `ros` contains the following keys:
+
+  * `ros.domain-id`: `0` - Sets the `ROS_DOMAIN_ID` environment variable for the ROS driver.
+  * `ros.localhost-only`: `0` - Sets the `ROS_LOCALHOST_ONLY` environment variable for the ROS driver.
+  * `ros.transport`: `udp` - Configures DDS transport. Options are `udp`, `shm`, `builtin` (or `rmw_fastrtps_cpp`), `rmw_cyclonedds_cpp`. Corresponding DDS XML files can be found in the `/var/snap/rosbot-xl/common` directory (custom FastDDS setups can also be created here).
+  * `ros.namespace`: `(unset)` - Namespace for all topics and transforms.
+
+  The `driver` contains the following keys:
+
+  * `channel-type`: `serial`
+  * `serial-port`: `auto`
+  * `serial-baudrate`: `256000`
+  * `frame-id`: `laser`
+  * `inverted`: `false`
+  * `angle-compensate`: `true`
+  * `scan-mode`: `(unset)`
+  * `device-namespace`: `(unset)`
 
   To set the parameters, use the snap set command, e.g.,
 
-     snap set husarion-rplidar driver.namespace=robot
+     snap set husarion-rplidar driver.device-namespace=front_lidar
 
 grade: stable
 confinement: strict
@@ -62,7 +70,6 @@ apps:
     command-chain: [usr/bin/ros_setup.sh]
     daemon: simple
     install-mode: enable
-    stop-mode: sigint-all
     plugs: [network, network-bind, shm-plug, raw-usb]
     slots: [shm-slot]
     extensions: [ros2-humble-ros-base]
@@ -85,17 +92,32 @@ parts:
     plugin: nil
     stage-packages:
       - ros-humble-rplidar-ros
-      - usbutils # lsusb
     override-stage: |
       craftctl default
       version="$(apt-cache policy ros-humble-rplidar-ros | grep Candidate | awk '{print $2}')"
       craftctl set version="$version"
       craftctl set grade="stable"
-      
+
+  yq:
+    plugin: nil
+    override-build: |
+      craftctl default
+
+      YQ_VERSION="v4.35.1"
+      TARGETARCH=$CRAFT_ARCH_BUILD_FOR
+      curl -L "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${TARGETARCH}" -o $CRAFT_PART_BUILD/yq
+    override-prime: |
+      craftctl default
+    
+      cp $CRAFT_PART_BUILD/yq $CRAFT_PRIME/usr/bin/yq
+      chmod +x $CRAFT_PRIME/usr/bin/yq
+    build-packages:
+      - curl
+
   # copy local scripts to the snap usr/bin
   local-files-ros:
     plugin: dump
-    source: snap/local/ros_common/
+    source: snap/local/local-ros/
     organize:
       '*.sh': usr/bin/
       '*.xml': usr/share/husarion-rplidar/config/
