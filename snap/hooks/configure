@@ -20,7 +20,13 @@ VALID_DRIVER_KEYS=(
   "device-namespace"
 )
 
-VALID_CONFIGURATION_KEYS=(
+# common
+validate_keys "driver" VALID_DRIVER_KEYS[@]
+
+VALID_BOOLEAN_OPTIONS=("true" "false")
+
+# validate configuration
+VALID_CONFIGURATION_OPTIONS=(
   "custom"
   "a2m8"
   "a2m12"
@@ -30,9 +36,7 @@ VALID_CONFIGURATION_KEYS=(
   "s3"
 )
 
-# common
-validate_keys "driver" VALID_DRIVER_KEYS[@]
-validate_keys "configuration" VALID_CONFIGURATION_KEYS[@]
+validate_option "configuration" VALID_CONFIGURATION_OPTIONS[@]
 
 config_value=$(snapctl get configuration)
 
@@ -58,8 +62,6 @@ case "$config_value" in
   snapctl set driver.scan-mode="DenseBoost"
   ;;
 esac
-
-VALID_BOOLEAN_OPTIONS=("true" "false")
 
 # validate driver.channel-type
 VALID_CHANNEL_TYPE_OPTIONS=("serial" "tcp" "udp")
