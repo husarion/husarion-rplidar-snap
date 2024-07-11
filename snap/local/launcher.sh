@@ -2,18 +2,15 @@
 
 source $SNAP/usr/bin/utils.sh
 
-# Iterate over the snap parameters and retrieve their value.
-# If a value is set, it is forwarded to the launch file.
-OPTIONS=(
- channel-type
- serial-port
- serial-baudrate
- frame-id
- inverted
- angle-compensate
- scan-mode
- device-namespace
-)
+LAUNCH_OPTIONS=""
+
+# Retrieve the namespace using snapctl
+NAMESPACE="$(snapctl get ros.namespace)"
+
+# Check if NAMESPACE is not set or is empty
+if [ -n "$NAMESPACE" ]; then
+    LAUNCH_OPTIONS+="namespace:=${NAMESPACE} "
+fi
 
 # Check if SERIAL_PORT is set to auto or specified
 SERIAL_PORT=$(find_ttyUSB driver.serial-port "10c4")
@@ -32,7 +29,18 @@ else
   log_and_echo "Specified serial port exists: $SERIAL_PORT"
 fi
 
-LAUNCH_OPTIONS=""
+# Iterate over the snap parameters and retrieve their value.
+# If a value is set, it is forwarded to the launch file.
+OPTIONS=(
+ channel-type
+ serial-port
+ serial-baudrate
+ frame-id
+ inverted
+ angle-compensate
+ scan-mode
+ device-namespace
+)
 
 for OPTION in "${OPTIONS[@]}"; do
   VALUE="$(snapctl get driver.${OPTION})"
@@ -49,7 +57,7 @@ done
 
 if [ "${LAUNCH_OPTIONS}" ]; then
   # watch the log with: "journalctl -t rosbot-xl"
-  log "Running with options: ${LAUNCH_OPTIONS}"
+  log_and_echo "Running with options: ${LAUNCH_OPTIONS}"
 fi
 
 ros2 launch $SNAP/usr/bin/rplidar.launch.py ${LAUNCH_OPTIONS}
