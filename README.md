@@ -1,5 +1,9 @@
 ## husarion-rplidar-snap
 
+<p align="center">
+  <img src="snap/gui/icon.png" width="150px">
+</p>
+
 Snap for SLAMTEC LIDARs customized for Husarion robots.
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/husarion-rplidar)
