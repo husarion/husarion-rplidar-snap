@@ -114,13 +114,24 @@ parts:
     build-packages:
       - curl
 
-  # copy local scripts to the snap usr/bin
+  # # copy local scripts to the snap usr/bin
   local-files-ros:
     plugin: dump
-    source: snap/local/local-ros/
+    source: https://github.com/husarion/husarion-snap-common
+    source-branch: "0.0.1"
+    source-type: git
     organize:
-      '*.sh': usr/bin/
-      '*.xml': usr/share/husarion-rplidar/config/
+      'local-ros/*.sh': usr/bin/
+      'local-ros/*.xml': usr/share/husarion-rplidar/config/
+      'local-ros/ros.env': usr/share/husarion-depthai/config/
+
+  # # copy local scripts to the snap usr/bin
+  # local-files-ros:
+  #   plugin: dump
+  #   source: snap/local/local-ros/
+  #   organize:
+  #     '*.sh': usr/bin/
+  #     '*.xml': usr/share/husarion-rplidar/config/
 
   local-files:
     plugin: dump
