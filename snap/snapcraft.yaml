@@ -38,7 +38,7 @@ description: |
 
 grade: stable
 confinement: strict
-base: core24
+base: core22
 
 contact: https://github.com/husarion/husarion-rplidar-snap/issues
 issues: https://github.com/husarion/husarion-rplidar-snap/issues
@@ -64,14 +64,14 @@ apps:
     install-mode: enable
     plugs: [network, network-bind, shm-plug, raw-usb]
     slots: [shm-slot]
-    extensions: [ros2-jazzy-ros-base]
+    extensions: [ros2-humble-ros-base]
 
   husarion-rplidar:
     command: usr/bin/launcher.sh
     command-chain: [usr/bin/check_daemon_running.sh, usr/bin/ros_setup.sh]
     plugs: [network, network-bind, shm-plug, raw-usb]
     slots: [shm-slot]
-    extensions: [ros2-jazzy-ros-base]
+    extensions: [ros2-humble-ros-base]
 
   start:
     command: usr/bin/start_launcher.sh
@@ -83,10 +83,10 @@ parts:
   husarion-rplidar:
     plugin: nil
     stage-packages:
-      - ros-jazzy-rplidar-ros
+      - ros-humble-rplidar-ros
     override-stage: |
       craftctl default
-      version="$(apt-cache policy ros-jazzy-rplidar-ros | grep Candidate | awk '{print $2}')"
+      version="$(apt-cache policy ros-humble-rplidar-ros | grep Candidate | awk '{print $2}')"
       craftctl set version="$version"
       craftctl set grade="stable"
 

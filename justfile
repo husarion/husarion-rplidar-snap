@@ -1,3 +1,8 @@
+[private]
+default:
+    @just --list --unsorted
+
+# some random build script
 build target="humble":
     #!/bin/bash
     export SNAPCRAFT_ENABLE_EXPERIMENTAL_EXTENSIONS=1
