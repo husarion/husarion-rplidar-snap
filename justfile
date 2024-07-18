@@ -1,6 +1,20 @@
-build:
+build target="humble":
     #!/bin/bash
     export SNAPCRAFT_ENABLE_EXPERIMENTAL_EXTENSIONS=1
+
+    if [ {{target}} == "humble" ]; then
+        export ROS_DISTRO=humble
+        export CORE_VERSION=core22
+    elif [ {{target}} == "jazzy" ]; then
+        export ROS_DISTRO=jazzy
+        export CORE_VERSION=core24
+    else
+        echo "Unknown target: $target"
+        exit 1
+    fi
+
+    ./render_template.py ./snapcraft_template.yaml.jinja2 snap/snapcraft.yaml
+
     snapcraft
 
 install:
@@ -20,7 +34,7 @@ clean:
     export SNAPCRAFT_ENABLE_EXPERIMENTAL_EXTENSIONS=1
     snapcraft clean   
 
-iterate:
+iterate target="humble":
     #!/bin/bash
     start_time=$(date +%s)
     
@@ -30,8 +44,20 @@ iterate:
     sudo rm -rf squashfs-root/
     sudo rm -rf husarion-rplidar*.snap
     export SNAPCRAFT_ENABLE_EXPERIMENTAL_EXTENSIONS=1
+    
+    if [ {{target}} == "humble" ]; then
+        export ROS_DISTRO=humble
+    elif [ {{target}} == "jazzy" ]; then
+        export ROS_DISTRO=jazzy
+    else
+        echo "Unknown target: {{target}}"
+        exit 1
+    fi
+
     snapcraft clean
+    ./render_template.py ./snapcraft_template.yaml.jinja2 snap/snapcraft.yaml
     snapcraft
+
     unsquashfs husarion-rplidar*.snap
     sudo snap try squashfs-root/
     sudo snap connect husarion-rplidar:raw-usb

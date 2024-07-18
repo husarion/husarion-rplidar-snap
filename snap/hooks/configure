@@ -68,14 +68,15 @@ VALID_CHANNEL_TYPE_OPTIONS=("serial" "tcp" "udp")
 validate_option "driver.channel-type" VALID_CHANNEL_TYPE_OPTIONS[@]
 
 # validate driver.serial-port
-validate_serial_port "driver.serial-port"
+VALID_VIDEO_DEVICE_OPTIONS=("auto")
+validate_path "driver.serial-port" "/dev/ttyUSB[0-9]+" VALID_VIDEO_DEVICE_OPTIONS[@]
 
 # validate driver.serial-baudrate
 SUPPORTED_SERIAL_BAUDRATE_RANGE=(0 1000000)
 validate_number "driver.serial-baudrate" SUPPORTED_SERIAL_BAUDRATE_RANGE[@]
 
 # validate driver.frame-id
-validate_regex "driver.frame-id" '^[a-z_-]{1,30}$' "Possible values are text with a maximum length of 30 characters, containing only lowercase letters (a-z),'-' or '_'."
+validate_regex "driver.frame-id" '^[a-z_-]{1,30}$'
 
 # validate driver.inverted
 validate_option "driver.inverted" VALID_BOOLEAN_OPTIONS[@]
@@ -85,14 +86,10 @@ validate_option "driver.angle-compensate" VALID_BOOLEAN_OPTIONS[@]
 
 # validate driver.scan-mode
 VALID_SCAN_MODE_OPTIONS=("DenseBoost" "Sensitivity" "Standard")
-validate_option "driver.scan-mode" VALID_SCAN_MODE_OPTIONS[@]
+validate_option --allow-unset "driver.scan-mode" VALID_SCAN_MODE_OPTIONS[@]
 
 # validate device-namespace
-DEVICE_NAMESPACE=$(snapctl get driver.device-namespace)
-
-if [[ -n "$DEVICE_NAMESPACE" ]]; then
-  validate_regex "driver.device-namespace" '^[a-z_]{1,10}$' "Possible values are text with a maximum length of 10 characters, containing only lowercase letters (a-z) or '_'."
-fi
+validate_regex --allow-unset "driver.device-namespace" '^[a-z_]{1,10}$'
 
 $SNAP/usr/bin/configure_hook_ros.sh
 
