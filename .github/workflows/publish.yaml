@@ -30,10 +30,11 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-tags: true
-
+        
     - name: Render snapcraft.yaml
       run: |
-        pip install jinja2
+        sudo apt update 
+        sudo apt install python3-jinja2
         export ROS_DISTRO=${{ matrix.ros_distro }}
         ./render_template.py ./snapcraft_template.yaml.jinja2 snap/snapcraft.yaml
 
