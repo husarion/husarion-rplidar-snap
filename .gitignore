@@ -1,3 +1,4 @@
 squashfs-root/
 *.snap
 exported.txt
+**/snapcraft.yaml
