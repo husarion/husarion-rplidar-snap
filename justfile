@@ -18,8 +18,9 @@ build target="humble":
         exit 1
     fi
 
+    sudo rm -rf snap/snapcraft.yaml
     ./render_template.py ./snapcraft_template.yaml.jinja2 snap/snapcraft.yaml
-
+    chmod 444 snap/snapcraft.yaml
     snapcraft
 
 install:
@@ -39,7 +40,7 @@ clean:
     export SNAPCRAFT_ENABLE_EXPERIMENTAL_EXTENSIONS=1
     snapcraft clean   
 
-iterate target="humble":
+iterate target="jazzy":
     #!/bin/bash
     start_time=$(date +%s)
     
@@ -60,14 +61,18 @@ iterate target="humble":
     fi
 
     snapcraft clean
+    sudo rm -rf snap/snapcraft.yaml
     ./render_template.py ./snapcraft_template.yaml.jinja2 snap/snapcraft.yaml
+    chmod 444 snap/snapcraft.yaml
     snapcraft
 
     unsquashfs husarion-rplidar*.snap
     sudo snap try squashfs-root/
     sudo snap connect husarion-rplidar:raw-usb
+    sudo snap connect husarion-rplidar:hardware-observe # for find_usb_device
     sudo snap connect husarion-rplidar:shm-plug husarion-rplidar:shm-slot
     sudo husarion-rplidar.stop
+    sudo snap set husarion-rplidar configuration=s2
 
     end_time=$(date +%s)
     duration=$(( end_time - start_time ))

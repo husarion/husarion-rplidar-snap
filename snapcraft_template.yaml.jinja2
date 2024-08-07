@@ -44,6 +44,10 @@ contact: https://github.com/husarion/husarion-rplidar-snap/issues
 issues: https://github.com/husarion/husarion-rplidar-snap/issues
 website: https://husarion.com/
 
+hooks:
+  configure:
+    plugs: [raw-usb, hardware-observe]
+
 slots:
   shm-slot:
     interface: shared-memory
@@ -62,14 +66,14 @@ apps:
     command-chain: [usr/bin/ros_setup.sh]
     daemon: simple
     install-mode: enable
-    plugs: [network, network-bind, shm-plug, raw-usb]
+    plugs: [network, network-bind, shm-plug, raw-usb, hardware-observe]
     slots: [shm-slot]
     extensions: [ros2-{{ ros_distro }}-ros-base]
 
   husarion-rplidar:
     command: usr/bin/launcher.sh
     command-chain: [usr/bin/check_daemon_running.sh, usr/bin/ros_setup.sh]
-    plugs: [network, network-bind, shm-plug, raw-usb]
+    plugs: [network, network-bind, shm-plug, raw-usb, hardware-observe]
     slots: [shm-slot]
     extensions: [ros2-{{ ros_distro }}-ros-base]
 
@@ -84,6 +88,7 @@ parts:
     plugin: nil
     stage-packages:
       - ros-{{ ros_distro }}-rplidar-ros
+      - ros-{{ ros_distro }}-rmw-cyclonedds-cpp
     override-stage: |
       craftctl default
       version="$(apt-cache policy ros-{{ ros_distro }}-rplidar-ros | grep Candidate | awk '{print $2}')"
