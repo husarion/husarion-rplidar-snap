@@ -13,7 +13,7 @@ if [ -n "$NAMESPACE" ]; then
 fi
 
 # Check if SERIAL_PORT is set to auto or specified
-SERIAL_PORT=$(find_ttyUSB driver.serial-port "10c4")
+SERIAL_PORT=$(find_usb_device "ttyUSB" driver.serial-port "10c4")
 if [ $? -ne 0 ]; then
   log_and_echo "Failed to find the serial port."
   exit 1
@@ -60,4 +60,4 @@ if [ "${LAUNCH_OPTIONS}" ]; then
   log_and_echo "Running with options: ${LAUNCH_OPTIONS}"
 fi
 
-ros2 launch $SNAP/usr/bin/rplidar.launch.py ${LAUNCH_OPTIONS}
+ros2 launch $SNAP/usr/bin/rplidar-${ROS_DISTRO}.launch.py ${LAUNCH_OPTIONS}

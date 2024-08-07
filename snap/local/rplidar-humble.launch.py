@@ -38,7 +38,7 @@ def generate_launch_description():
 
         node = Node(
             package='rplidar_ros',
-            executable='rplidar_node',
+            executable='rplidar_composition',
             name='rplidar_node',
             parameters=[{
                 'channel_type': channel_type,
