@@ -117,3 +117,22 @@ publish:
     export SNAPCRAFT_STORE_CREDENTIALS=$(cat exported.txt)
     snapcraft login
     snapcraft upload --release edge husarion-rplidar*.snap
+
+list-lxd-cache:
+    #!/bin/bash
+    sudo du -h --max-depth=1 /var/snap/lxd/common/lxd/storage-pools/default/containers/ | sort -h
+
+remove-lxd-cache:
+    #!/bin/bash
+    lxc project switch snapcraft
+
+    for container in $(lxc list --format csv -c n); do
+        lxc delete $container --force
+    done
+
+    echo "verify:"
+    sudo du -h --max-depth=1 /var/snap/lxd/common/lxd/storage-pools/default/containers/
+    df -h
+
+    lxc project switch default
+
