@@ -39,7 +39,7 @@ def generate_launch_description():
         node = Node(
             package='rplidar_ros',
             executable='rplidar_composition',
-            name='rplidar_node',
+            name='rplidar_composition',
             parameters=[{
                 'channel_type': channel_type,
                 'serial_port': serial_port,
