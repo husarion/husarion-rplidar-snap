@@ -84,16 +84,22 @@ apps:
     command: usr/bin/stop_launcher.sh
 
 parts:
+
   husarion-rplidar:
-    plugin: nil
+    plugin: colcon
+    source: https://github.com/Slamtec/rplidar_ros.git
+    source-branch: "ros2"
+    build-packages: 
+      - python3-vcstool
     stage-packages:
-      - ros-{{ ros_distro }}-rplidar-ros
       - ros-{{ ros_distro }}-rmw-cyclonedds-cpp
-    override-stage: |
+    override-pull: |
       craftctl default
-      version="$(apt-cache policy ros-{{ ros_distro }}-rplidar-ros | grep Candidate | awk '{print $2}')"
+      
+      version="$(git describe --always --tags| sed -e 's/^v//;s/-/+git/;y/-/./')"
+      [ -n "$(echo $version | grep "+git")" ] && grade=devel || grade=stable
       craftctl set version="$version"
-      craftctl set grade="stable"
+      craftctl set grade="$grade"
 
   local-files:
     plugin: dump

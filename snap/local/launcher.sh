@@ -60,4 +60,4 @@ if [ "${LAUNCH_OPTIONS}" ]; then
   log_and_echo "Running with options: ${LAUNCH_OPTIONS}"
 fi
 
-ros2 launch $SNAP/usr/bin/rplidar-${ROS_DISTRO}.launch.py ${LAUNCH_OPTIONS}
+ros2 launch $SNAP/usr/bin/rplidar.launch.py ${LAUNCH_OPTIONS}

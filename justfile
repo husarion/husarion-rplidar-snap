@@ -72,7 +72,7 @@ iterate target="jazzy":
     sudo snap connect husarion-rplidar:hardware-observe # for find_usb_device
     sudo snap connect husarion-rplidar:shm-plug husarion-rplidar:shm-slot
     sudo husarion-rplidar.stop
-    sudo snap set husarion-rplidar configuration=s2
+    sudo snap set husarion-rplidar configuration=s1
 
     end_time=$(date +%s)
     duration=$(( end_time - start_time ))
