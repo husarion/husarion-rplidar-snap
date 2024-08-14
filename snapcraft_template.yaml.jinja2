@@ -84,16 +84,6 @@ apps:
     command: usr/bin/stop_launcher.sh
 
 parts:
-  {# husarion-rplidar:
-    plugin: nil
-    stage-packages:
-      - ros-{{ ros_distro }}-rplidar-ros
-      - ros-{{ ros_distro }}-rmw-cyclonedds-cpp
-    override-stage: |
-      craftctl default
-      version="$(apt-cache policy ros-{{ ros_distro }}-rplidar-ros | grep Candidate | awk '{print $2}')"
-      craftctl set version="$version"
-      craftctl set grade="stable" #}
 
   husarion-rplidar:
     plugin: colcon
@@ -102,9 +92,7 @@ parts:
     build-packages: 
       - python3-vcstool
     stage-packages:
-      {# - ros-{{ ros_distro }}-rplidar-ros #}
       - ros-{{ ros_distro }}-rmw-cyclonedds-cpp
-    {# override-stage: | #}
     override-pull: |
       craftctl default
       
@@ -112,12 +100,6 @@ parts:
       [ -n "$(echo $version | grep "+git")" ] && grade=devel || grade=stable
       craftctl set version="$version"
       craftctl set grade="$grade"
-
-{# version="$(apt-cache policy ros-{{ ros_distro }}-rplidar-ros | grep Candidate | awk '{print $2}')"
-      craftctl set version="$version"
-      craftctl set grade="stable" #}
-
-
 
   local-files:
     plugin: dump
